@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title> </title>
+</head>
+
+<body>
+  <form>
+    <span id="searchItem">Search a sport:
+      <input id="sport" type="text" >
+      <input id="add-sport" value="Search" type="submit">
+    </span>
+  </form>
+  <div id="sports"> </div>
+  <div id="gifs-appear-here"> </div>
+  <script type="text/javascript">
+  $("#add-sport").on("click", function(event) {
+    event.preventDefault();
+
+    var newSport = $("#sport").val().trim();
+
+    var newSportButton = $("<button>");
+    newSportButton.text(newSport);
+
+    $("#sports").append(newSportButton);
+
+    $("#sport").val("");
+
+    //////makes button
+
+
+
+    /////api
+
+    $("button").on("click", function() {
+      $("#gifs-appear-here").empty();
+      var sports = $(this).text();
+
+      var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+        sports + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        .done(function(response) {
+          var results = response.data;
+          console.log(results)
+
+
+
+
+          for (var i = 0; i < results.length; i++) {
+            var gifDiv = $("<div class='item'>");
+
+            var rating = results[i].rating;
+
+            var p = $("<p>").text("Rating: " + rating);
+
+            var sportImage = $("<img class = 'gif'>")
+              .attr("data-state", "still")
+              .attr("data-animate", results[i].images.fixed_height.url)
+              .attr("data-still", results[i].images.fixed_height_still.url)
+              .attr("src", results[i].images.fixed_height_still.url);
+
+
+            gifDiv.append(sportImage).append(p)
+
+            $("#gifs-appear-here").prepend(gifDiv);
+
+
+          }
+        });
+    });
+
+  })
+  $(document).on("click", ".gif", function() {
+              var state = $(this).attr("data-state");
+              console.log("state: " + state);
+              if (state === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+              } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+              }
+
+
+
+
+
+            })
+
+  </script>
+</body>
+
+</html>
